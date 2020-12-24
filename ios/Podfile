@@ -9,10 +9,10 @@ end
 
 target 'Plugin' do
   capacitor_pods
-  pod 'SDWebImage', '~> 4.0'
+  pod 'SDWebImage'
 end
 
 target 'PluginTests' do
   capacitor_pods
-  pod 'SDWebImage', '~> 4.0'
+  pod 'SDWebImage'
 end

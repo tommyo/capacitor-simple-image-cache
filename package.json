@@ -1,6 +1,6 @@
 {
   "name": "@tommycto/capacitor-simple-image-cache",
-  "version": "0.0.1",
+  "version": "0.0.10",
   "description": "A basic image cache for Capacitor, based on https://github.com/triniwiz/capacitor-image-cache",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",

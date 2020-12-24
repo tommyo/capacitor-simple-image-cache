@@ -2,9 +2,9 @@ package com.github.tommyo.capacitorsimpleimagecache;
 
 import android.net.Uri;
 
+import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
 import com.facebook.cache.common.CacheKey;
-import com.facebook.cache.disk.FileCache;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.datasource.DataSources;
@@ -24,8 +24,6 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 
-import java.io.File;
-
 @NativePlugin
 public class ImageCache extends Plugin {
 
@@ -39,17 +37,13 @@ public class ImageCache extends Plugin {
     }
 
     private String localUrl(final CacheKey cacheKey) {
-        File file = null;
         ImagePipelineFactory imagePipelineFactory = ImagePipelineFactory.getInstance();
-        FileCache fileCache = imagePipelineFactory.getMainFileCache();
-        if (fileCache.hasKey(cacheKey)) {
-            file = ((FileBinaryResource) fileCache.getResource(cacheKey)).getFile();
+        BinaryResource file = imagePipelineFactory.getMainFileCache().getResource(cacheKey);
+        if (file == null) {
+            file = imagePipelineFactory.getSmallImageFileCache().getResource(cacheKey);
         }
-        fileCache = imagePipelineFactory.getSmallImageFileCache();
-        if (fileCache.hasKey(cacheKey)) {
-            file = ((FileBinaryResource) fileCache.getResource(cacheKey)).getFile();
-        }
-        return FileUtils.getPortablePath(getContext(), bridge.getLocalUrl(), Uri.fromFile(file));
+        Uri url = Uri.fromFile(((FileBinaryResource) file).getFile());
+        return FileUtils.getPortablePath(getContext(), bridge.getLocalUrl(), url);
     }
 
     @PluginMethod()

@@ -1,6 +1,8 @@
 import Foundation
 import Capacitor
 
+import SDWebImage
+
 let KEY = "__capacitor_simple_image_cache__"
 typealias JSObject = [String:Any]
 
@@ -13,6 +15,11 @@ public class ImageCache: CAPPlugin {
 
     private var cache: NSDictionary?
     private var manager: SDWebImageManager?
+    
+    @objc override public func load() {
+        manager = SDWebImageManager.shared()
+        manager?.imageDownloader?.shouldDecompressImages = false
+    }
 
     @objc func get(_ call: CAPPluginCall) {
 
@@ -24,41 +31,42 @@ public class ImageCache: CAPPlugin {
         }
 
         let url = URL.init(string: src)
-
+        
         self.manager?.loadImage(with: url, 
                                 options: SDWebImageOptions.scaleDownLargeImages, 
                                 progress: { (receivedSize, expectedSize, path) in
-
+                                    
                                 }, 
                                 completed: { (image, data, error, type, finished, completedUrl) in
+                                    if (image == nil && error != nil && data == nil) {
+                                        call.reject(error!.localizedDescription)
+                                        return
+                                    }
+                                    if (finished && completedUrl != nil) {
+                                        let host = self.bridge!.getLocalUrl()
 
-            if (image == nil && error != nil && data == nil) {
-                call.reject(error!.localizedDescription)
-                return
-            }
-            if (finished && completedUrl != nil) {
-                let key = self.manager?.cacheKey(for: completedUrl)
-                let source = self.manager?.imageCache?.defaultCachePath(forKey: key)
-                let host = self.bridge!.getLocalUrl()
-
-                let finalUrl = CAPFileManager.getPortablePath(host: host, uri: url)
-                
-                if (type == SDImageCacheType.disk) {
-                    DispatchQueue.main.async {
-                        call.resolve(["value": finalUrl])
-                    }
-                } else {
-                    SDImageCache.shared().store(image, 
-                                                forKey: completedUrl?.absoluteString, 
-                                                completion: {
-                        DispatchQueue.main.async {
-                            call.resolve(["value": finalUrl])
-                        }
-                    })
-                }
-                return
-            }
-        })
+                                        let key = self.manager?.cacheKey(for: completedUrl)
+                                        let source = self.manager?.imageCache?.defaultCachePath(forKey: key)
+                                        let path = URL.init(string: source!)
+                                        
+                                        let finalUrl = CAPFileManager.getPortablePath(host: host, uri: path) ?? ""
+                    
+                                        if (type == SDImageCacheType.disk) {
+                                            DispatchQueue.main.async {
+                                                call.resolve(["value": finalUrl])
+                                            }
+                                        } else {
+                                            SDImageCache.shared().store(image,
+                                                                        forKey: completedUrl?.absoluteString,
+                                                                        completion: {
+                                                                            DispatchQueue.main.async {
+                                                                                call.resolve(["value": finalUrl])
+                                                                            }
+                                                                        })
+                                        }
+                                        return
+                                    }
+                                })
     }
 
     @objc func hasItem(_ call: CAPPluginCall) {

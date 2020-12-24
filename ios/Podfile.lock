@@ -1,22 +1,29 @@
 PODS:
   - Capacitor (2.4.5):
     - CapacitorCordova
-  - CapacitorCordova (2.4.5)
+  - CapacitorCordova (2.1.1)
+  - SDWebImage (4.4.8):
+    - SDWebImage/Core (= 4.4.8)
+  - SDWebImage/Core (4.4.8)
 
 DEPENDENCIES:
   - "Capacitor (from `../node_modules/@capacitor/ios`)"
-  - "CapacitorCordova (from `../node_modules/@capacitor/ios`)"
+  - SDWebImage (~> 4.0)
+
+SPEC REPOS:
+  trunk:
+    - CapacitorCordova
+    - SDWebImage
 
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../node_modules/@capacitor/ios"
-  CapacitorCordova:
-    :path: "../node_modules/@capacitor/ios"
 
 SPEC CHECKSUMS:
   Capacitor: 16fff19464a7d37e2f996e0994749b04111ed3f0
-  CapacitorCordova: 4f552a757626d236959fd79e970b6b6a26efb859
+  CapacitorCordova: 2271de4d678eb616c5f70fe6b4d53e17e88ae171
+  SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
 
-PODFILE CHECKSUM: e66d6fa04b0daaf06d8498d39637adf77139c716
+PODFILE CHECKSUM: 7ea9f19de648961bab8a875474c92ed5f9eb34d4
 
 COCOAPODS: 1.9.3
